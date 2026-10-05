@@ -1,1 +1,50 @@
+name: Build Android APK
 
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compile and Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the source code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Set up the Java Development Kit
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3. Setup Gradle manually on the runner (Fixes the missing 'gradlew' error)
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: wrapper # Alternately change to a fixed version like '8.7' if your config fails
+
+      # 4. Create Debug Keystore for signing
+      - name: Create Debug Keystore
+        run: |
+          keytool -genkey -v -keystore debug.keystore -keyalg RSA -keysize 2048 -validity 10000 \
+            -alias androiddebugkey -keypass android -storepass android \
+            -dname "CN=Android Debug,O=Android,C=US"
+
+      # 5. Compile the project and build the debug APK using the installed gradle command
+      - name: Build Debug APK
+        run: gradle assembleDebug
+
+      # 6. Upload the compiled APK so you can download it from GitHub
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: google-ai-studio-app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
