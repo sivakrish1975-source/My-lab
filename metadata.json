@@ -1,0 +1,6 @@
+{
+  "name": "AL Collab",
+  "description": "Collaborative A/L study room with real-time peer chat, past papers auto-fetch, Gemini AI tutor, cloud file library, focus timer & marking schemes, interactive quizzes with visual questions, and latency monitor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
